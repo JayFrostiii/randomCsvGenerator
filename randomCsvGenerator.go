@@ -7,42 +7,40 @@ import (
 	"github.com/JayFrostiii/randomCsvGenerator/jsonReader"
 )
 
-type JsonReader interface{
-	Read(csvFormatObj interface{}) error
-}
-
-type CsvGenerator interface{
-	GetFormat() *csvGenerator.CvsFormat
-	GenerateData()
-}
+var CONFIG_PATH = "config/"
 
 func main() {
-	fileJSONFormatPtr := flag.String("jsonFile", "test.json", "fileJSON")
+	fileJSONFormatPtr := flag.String("jsonFile", "format.json", "fileJSON")
 	csvfilePtr := flag.String("csvFile", "test.csv", "fileCSV")
-	datasetCountPtr := flag.Int("count", 1, "Amount of Dataset that will be created")
 	separatorPtr := flag.String("separator", ";", "Separator for each cvs dataset")
+	datasetCountPtr := flag.Int("count", 1, "Amount of Dataset that will be created")
 	flag.Parse()
 
-	fmt.Println("START...")
-	defer fmt.Println("End...")
+	fmt.Println("START")
+	defer fmt.Println("End")
 
-	if err := initApp(); err != nil {
-		return
-	}
+	generateCSV(fileJSONFormatPtr, csvfilePtr, separatorPtr, datasetCountPtr)
+}
 
-	generator := csvGenerator.NewCsvGenerator(csvfilePtr, datasetCountPtr, separatorPtr)
-
-	reader := jsonReader.NewJsonReader(fileJSONFormatPtr)
-
-	if err := reader.Read(generator.GetFormat()); err != nil {
+func generateCSV(fileJSONFormat, csvfile, separator *string, datasetCount *int) {
+	fmt.Println("Initializing...")
+	if err := csvGenerator.InitRandomizer(CONFIG_PATH); err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	generator.GenerateData()
+	generator := csvGenerator.NewCsvGenerator(csvfile, datasetCount, separator)
+	reader := jsonReader.NewJsonReader(fileJSONFormat)
 
-}
+	fmt.Println("Reading JSON...")
+	if err := reader.Read(CONFIG_PATH, generator.GetFormat()); err != nil {
+		fmt.Println(err)
+		return
+	}
 
-func initApp() error {
-	return csvGenerator.InitRandomizer()
+	fmt.Println("Generating CSV...")
+	multErr := generator.GenerateData()
+	for err := range multErr {
+		fmt.Println(err)
+	}
 }

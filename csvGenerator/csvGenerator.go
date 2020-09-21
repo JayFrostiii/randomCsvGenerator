@@ -2,13 +2,14 @@ package csvGenerator
 
 import (
 	"encoding/csv"
+	"fmt"
 	"os"
 )
 
 type Column struct {
 	Name    string `json:"name"`
 	ColType string `json:"colType"`
-	Max int `json:"max"`
+	Max     int    `json:"max"`
 }
 
 type CvsFormat struct {
@@ -18,7 +19,7 @@ type CvsFormat struct {
 type csvGenerator struct {
 	count     int
 	separator rune
-	format    CvsFormat
+	Format    CvsFormat
 	csvWriter *csv.Writer
 }
 
@@ -43,7 +44,7 @@ func NewCsvGenerator(csvFileName *string, count *int, separator *string) *csvGen
 }
 
 func (gen *csvGenerator) GetFormat() *CvsFormat {
-	return &gen.format
+	return &gen.Format
 }
 
 func (gen *csvGenerator) GenerateData() []error {
@@ -51,18 +52,21 @@ func (gen *csvGenerator) GenerateData() []error {
 	gen.csvWriter.Comma = gen.separator
 
 	for i := 1; i <= gen.count; i++ {
-		if err := gen.csvWriter.Write(gen.generateDataset()); err != nil {
-			errorList = append(errorList,err)
+		dataset := gen.generateDataset()
+		fmt.Println(dataset)
+		if err := gen.csvWriter.Write(dataset); err != nil {
+			errorList = append(errorList, err)
 		}
 	}
 
+	gen.csvWriter.Flush()
 	return errorList
 }
 
 func (gen csvGenerator) generateDataset() []string {
 	var dataset []string
 
-	for _, col := range gen.format.Columns {
+	for _, col := range gen.Format.Columns {
 		switch col.ColType {
 		case "string":
 			dataset = append(dataset, randomWord())
