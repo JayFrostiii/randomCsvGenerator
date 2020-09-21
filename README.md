@@ -52,10 +52,10 @@ Example JSON:
 
 ## Usage
 The executable can be called with following flags:
-* -jsonFile <name of JSON containig format>           DEFAULT: format.json
-* -csvFile <name of CSV file that will be created>    DEFAULT: test.csv
-* -separator <symbol for separation in CSV>           DEFAULT: ;
-* -count <number of datasets to create randomly>      DEFAULT: 1
+* -jsonFile \<name of JSON containig format\>           DEFAULT: format.json
+* -csvFile \<name of CSV file that will be created\>    DEFAULT: test.csv
+* -separator \<symbol for separation in CSV\>           DEFAULT: ;
+* -count \<number of datasets to create randomly\>      DEFAULT: 1
 
 e.g.
 ./randomCsvGenerator.exe -jsonFile myFormat.json -csvFile myTest.csv -separator , -count 100
